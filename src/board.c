@@ -21,12 +21,44 @@ board *init_board(char *fen) {
   game->size_x = SIZE_STD; /* TODO: make game size customizable */
   game->size_y = SIZE_STD;
 
-  /* initialize position hash table */
-  hcreate(game->size_x*game->size_y);
-
+  
   /* TODO: interpret FEN notation and initialize game with it */
   /* a standard game will be created as as placeholder */
+  game->game[0][0] = (moveable){game->rook, WHITE, NORMAL, 0};
+  game->game[0][1] = (moveable){game->knight, WHITE, SKIP, 0};
+  game->game[0][2] = (moveable){game->bishop, WHITE, NORMAL, 0};
+  game->game[0][3] = (moveable){game->queen, WHITE, NORMAL, 0};
+  game->game[0][4] = (moveable){game->king, WHITE, NORMAL, 0};
+  game->game[0][5] = (moveable){game->bishop, WHITE, NORMAL, 0};
+  game->game[0][6] = (moveable){game->knight, WHITE, SKIP, 0};
+  game->game[0][7] = (moveable){game->rook, WHITE, NORMAL, 0};
 
+  game->game[7][0] = (moveable){game->rook, BLACK, NORMAL, 0};
+  game->game[7][1] = (moveable){game->knight, BLACK, SKIP, 0};
+  game->game[7][2] = (moveable){game->bishop, BLACK, NORMAL, 0};
+  game->game[7][3] = (moveable){game->queen, BLACK, NORMAL, 0};
+  game->game[7][4] = (moveable){game->king, BLACK, NORMAL, 0};
+  game->game[7][5] = (moveable){game->bishop, BLACK, NORMAL, 0};
+  game->game[7][6] = (moveable){game->knight, BLACK, SKIP, 0};
+  game->game[7][7] = (moveable){game->rook, BLACK, NORMAL, 0};
+
+  game->game[1][0] = (moveable){game->pawn, WHITE, NORMAL, 0};
+  game->game[1][1] = (moveable){game->pawn, WHITE, NORMAL, 0};
+  game->game[1][2] = (moveable){game->pawn, WHITE, NORMAL, 0};
+  game->game[1][3] = (moveable){game->pawn, WHITE, NORMAL, 0};
+  game->game[1][4] = (moveable){game->pawn, WHITE, NORMAL, 0};
+  game->game[1][5] = (moveable){game->pawn, WHITE, NORMAL, 0};
+  game->game[1][6] = (moveable){game->pawn, WHITE, NORMAL, 0};
+  game->game[1][7] = (moveable){game->pawn, WHITE, NORMAL, 0};
+
+  game->game[6][0] = (moveable){game->pawn, BLACK, NORMAL, 0};
+  game->game[6][1] = (moveable){game->pawn, BLACK, NORMAL, 0};
+  game->game[6][2] = (moveable){game->pawn, BLACK, NORMAL, 0};
+  game->game[6][3] = (moveable){game->pawn, BLACK, NORMAL, 0};
+  game->game[6][4] = (moveable){game->pawn, BLACK, NORMAL, 0};
+  game->game[6][5] = (moveable){game->pawn, BLACK, NORMAL, 0};
+  game->game[6][6] = (moveable){game->pawn, BLACK, NORMAL, 0};
+  game->game[6][7] = (moveable){game->pawn, BLACK, NORMAL, 0};
   
   return game;
 }
@@ -68,7 +100,14 @@ int move(position origin, position target) {
   hsearch(t, ENTER);
   if (mov->mk == NORMAL) {
 	position * moves = mov->p->moves(origin); /* we get an array containing all possible moves */
-	for (int i = 0; i < )
+	int move = 0;
+	while (moves[move].rank != -1 && moves[move].file != -1) {
+	  
+	  moves++;
+	}
   }
   
 }
+
+
+

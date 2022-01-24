@@ -13,5 +13,5 @@ typedef struct {
 } piece;
 
 piece rook, bishop, knight, queen, pawn, king;
-
+position coords_to_pos(short rank, short file);
 #endif
