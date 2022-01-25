@@ -12,6 +12,6 @@ typedef struct {
   position *(*moves)(position); /* Legal moves, without game context, for current piece */
 } piece;
 
-piece rook, bishop, knight, queen, pawn, king;
+extern piece rook, bishop, knight, queen, pawn, king;
 position coords_to_pos(short rank, short file);
 #endif
