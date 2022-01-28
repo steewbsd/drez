@@ -1,9 +1,21 @@
 #include "piece.h"
 #include <stdlib.h>
+#include <string.h>
 
 position coords_to_pos(short rank, short file) {
   position p = {rank, file};
   return p;
+}
+
+SIDE opposite(SIDE orig) {
+  switch (orig) {
+  case WHITE:
+	return BLACK;
+  case BLACK:
+	return WHITE;
+  default:
+	return NONE;
+  }
 }
 
 position *rook_valid (position pos, cell game[SIZE_STD][SIZE_STD]) {
@@ -64,33 +76,81 @@ position *bishop_valid (position pos, cell game[SIZE_STD][SIZE_STD]) {
   /* we can approximate, in the worst case the bishop will take (board's diagonal length * 2) - 3 */
   const int max_length = SIZE_STD;
   position *valid_moves = malloc(sizeof(position)*max_length+sizeof(position)); /* allocate vertical + horizontal moves + sentinel */
-  int i = 0;
-  int min = (pos.file < pos.rank) ? pos.file : pos.rank;
-  position lower_left = {pos.rank - min, pos.file - min};
-  /* now we start crawling diagonally up right */
-  int n = 0;
-  while (lower_left.rank+i < SIZE_STD && lower_left.file+i < SIZE_STD) {
-	if (pos.rank == lower_left.rank+i && pos.file == lower_left.file+i) continue;
-	valid_moves[n++] = coords_to_pos(lower_left.rank+i, lower_left.file+i);
+  int i = 0, move_idx = 0;
+  /* first diagonal: top right */
+  while (pos.rank + i < SIZE_STD && pos.file + i < SIZE_STD) {
+	valid_moves[move_idx++] = coords_to_pos(pos.rank + i, pos.file + i);
+	if (game[pos.rank+i][pos.file+i].piece != NULL) break;
 	i++;
   }
-  /* TODO: other diagonal */
-  valid_moves[n] = coords_to_pos(-1, -1);
+  /* second diagonal: top left */
+  i = 0;
+  while (pos.rank + i < SIZE_STD && pos.file - i >= 0) {
+	valid_moves[move_idx++] = coords_to_pos(pos.rank + i, pos.file - i);
+	if (game[pos.rank+i][pos.file-i].piece != NULL) break;
+	i++;
+  }
+  /* third diagonal: bottom left */
+  i = 0;
+  while (pos.rank - i >= 0 && pos.file - i >= 0) {
+	valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file - i);
+	if (game[pos.rank-i][pos.file-i].piece != NULL) break;
+	i++;
+  }
+  /* fourth diagonal: bottom right */
+  i = 0;
+  while (pos.rank - i < SIZE_STD && pos.file + i < SIZE_STD) {
+	valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file + i);
+	if (game[pos.rank-i][pos.file+i].piece != NULL) break;
+	i++;
+  }
+  valid_moves[move_idx] = SENTINEL;
   return valid_moves;
-  //  rank_dif *= ((rank_dif>0) - (rank_dif<0)); /* get abs value */
 }
 
 position *queen_valid (position pos, cell game[SIZE_STD][SIZE_STD]) {
-  return NULL;
+  position *bishop_moves = bishop_valid(pos, game);
+  position *rook_moves = rook_valid(pos, game);
+  int bishop_moves_len, rook_moves_len;
+  for (bishop_moves_len = 0; bishop_moves[bishop_moves_len].file != -1; bishop_moves_len++);
+  for (rook_moves_len = 0; rook_moves[rook_moves_len].file != -1; rook_moves_len++);
+  int total_len = bishop_moves_len + rook_moves_len;
+  position *valid_moves = malloc(sizeof(position)*total_len+sizeof(position));
+  memcpy(valid_moves, bishop_moves, bishop_moves_len);
+  memcpy(valid_moves+bishop_moves_len, rook_moves, rook_moves_len);
+  valid_moves[bishop_moves_len+rook_moves_len] = SENTINEL;
+  return valid_moves;
 }
 
 position *king_valid(position pos, cell game[SIZE_STD][SIZE_STD]) {
-  return NULL;
+  const int max_length = 8;
+  position *valid_moves = malloc(sizeof(position)*max_length+sizeof(position));
+  for (int i = -1; i <= 1; i++) {
+	for (int j = -1; j <= 1; j++) {
+	  if (i == 0 && j == 0) continue;
+	  if (game[pos.rank+i][pos.rank+j].piece != NULL) break;
+	}
+  }
+  return valid_moves;
 }
 
 position *pawn_valid (position pos, cell game[SIZE_STD][SIZE_STD]) {
-  position *valid_moves = malloc(sizeof(position)*3+sizeof(position)); /* three possible moves: forwards, twice forwards (at start), en passant */
-  // TODO
+  int max_length = 4;
+  position *valid_moves = malloc(sizeof(position)*max_length+sizeof(position));
+  int move_idx = 0;
+  valid_moves[move_idx++] = coords_to_pos(pos.rank + 1, pos.file);
+  if (game[pos.rank][pos.file].flags & FLAG_FIRSTMOVE) {
+	valid_moves[move_idx++] = coords_to_pos(pos.rank + 2, pos.file);
+  }
+  if (game[pos.rank+1][pos.file+1].piece != NULL &&
+	  game[pos.rank+1][pos.file+1].side == opposite(game[pos.rank][pos.file].side)) {
+	valid_moves[move_idx++] = coords_to_pos(pos.rank + 1, pos.file + 1);
+  }
+  if (game[pos.rank+1][pos.file-1].piece != NULL &&
+	  game[pos.rank+1][pos.file-1].side == opposite(game[pos.rank][pos.file].side)) {
+	valid_moves[move_idx++] = coords_to_pos(pos.rank + 1, pos.file - 1);
+  }
+  valid_moves[move_idx] = SENTINEL;
   return valid_moves;
 }
 
