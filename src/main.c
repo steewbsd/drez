@@ -53,6 +53,7 @@ int main() {
 		selected = 0;
 	  } else {
 		origin = coords_to_pos(sel_row, sel_col);
+		if (game_board->game[sel_row][sel_col].piece == NULL) break;
 		amoves = moves(game_board->game[sel_row][sel_col].piece,coords_to_pos(sel_row, sel_col),game_board->game);
 		selected = 1;
 	  }
