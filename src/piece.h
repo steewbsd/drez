@@ -1,6 +1,10 @@
 #ifndef PIECE_H
 #define PIECE_H
-#define SIZE 8
+#define SIZE_STD 8
+#define SENTINEL coords_to_pos(-1, -1);
+#include <stdint.h>
+
+typedef enum { BLACK, WHITE, NONE } SIDE;
 
 typedef struct {
   short rank; /* row */
@@ -9,9 +13,16 @@ typedef struct {
 
 typedef struct { 
   char ident; /* FEN style piece identification */
-  position *(*moves)(position); /* Legal moves, without game context, for current piece */
 } piece;
 
+typedef struct {
+  piece *piece;
+  SIDE side;
+  uint8_t flags;
+} cell;
+
+position *moves(piece *piece, position pos, cell game[SIZE_STD][SIZE_STD]);
 extern piece rook, bishop, knight, queen, pawn, king;
 position coords_to_pos(short rank, short file);
 #endif
+
