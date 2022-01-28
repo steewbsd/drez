@@ -166,7 +166,8 @@ position *pawn_valid(position pos, cell game[SIZE_STD][SIZE_STD]) {
   int move_idx = 0;
   int side_sign = 1;
   if (game[pos.rank][pos.file].side == BLACK) side_sign = -1;
-  valid_moves[move_idx++] = coords_to_pos(pos.rank + side_sign, pos.file);
+  if (game[pos.rank+side_sign][pos.file].piece == NULL)
+	valid_moves[move_idx++] = coords_to_pos(pos.rank + side_sign, pos.file);
   if (game[pos.rank][pos.file].flags & FLAG_FIRSTMOVE) {
     valid_moves[move_idx++] = coords_to_pos(pos.rank + 2*side_sign, pos.file);
   }

@@ -9,7 +9,10 @@ int main() {
   if (game_board == NULL) printf("error initializing board...\n");
   initscr();
   noecho();
-  keypad(stdscr, 1);
+  cbreak();
+  WINDOW *win = newwin(SIZE_STD, SIZE_STD, LINES/2 - SIZE_STD/2, COLS/2 - SIZE_STD/2);
+  keypad(win, 1);
+  box(win, '*', '*');
   int input = 0;
   int sel_row = 0, sel_col = 0;
   int selected = 0;
@@ -19,19 +22,19 @@ int main() {
   while (input != 'q') {
 	for (int row = 0; row < SIZE_STD; row++) {
 	  for (int col = 0; col < SIZE_STD; col++) {
-		move(row, col);
+		wmove(win, row, col);
 		if (row == sel_row && col == sel_col) {
-		  addch('@');
+		  waddch(win, '@');
 		} else if (amoves != NULL && is_in(coords_to_pos(row, col), amoves)) {
-		  addch('.');
+		  waddch(win, '.');
 		} else if (game_board->game[row][col].piece == NULL) {
-		  addch(' ');
+		  waddch(win, ' ');
 		} else {
-		  addch(game_board->game[row][col].piece->ident);
+		  waddch(win, game_board->game[row][col].piece->ident);
 		}
 	  }
 	}
-	switch (input = getch()) {
+	switch (input = wgetch(win)) {
 	case KEY_UP:
 	  sel_row = fmin(sel_row + 1, SIZE_STD - 1);
 	  break;
@@ -60,7 +63,7 @@ int main() {
 	default:
 	  continue;
 	}
-	refresh();
+	wrefresh(win);
   }
   endwin();
   free_board(game_board);
