@@ -9,6 +9,7 @@ typedef struct {
 } board;
 
 board *init_board();
+int is_in(position m, position *moves);
 void free_board(board *game);
 int move_piece(position origin, position target, board *game);
 #endif

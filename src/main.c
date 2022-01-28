@@ -1,6 +1,7 @@
 #include "board.h"
 #include <stdio.h>
 #include <curses.h>
+#include <stdlib.h>
 #include <math.h>
 
 int main() {
@@ -14,12 +15,15 @@ int main() {
   int selected = 0;
   position origin;
   position target;
+  position *amoves = NULL;
   while (input != 'q') {
 	for (int row = 0; row < SIZE_STD; row++) {
 	  for (int col = 0; col < SIZE_STD; col++) {
 		move(row, col);
 		if (row == sel_row && col == sel_col) {
 		  addch('@');
+		} else if (amoves != NULL && is_in(coords_to_pos(row, col), amoves)) {
+		  addch('.');
 		} else if (game_board->game[row][col].piece == NULL) {
 		  addch(' ');
 		} else {
@@ -44,9 +48,12 @@ int main() {
 	  if (selected) {
 		target = coords_to_pos(sel_row, sel_col);
 		move_piece(origin, target, game_board);
+		free (amoves);
+		amoves = NULL;
 		selected = 0;
 	  } else {
 		origin = coords_to_pos(sel_row, sel_col);
+		amoves = moves(game_board->game[sel_row][sel_col].piece,coords_to_pos(sel_row, sel_col),game_board->game);
 		selected = 1;
 	  }
 	default:

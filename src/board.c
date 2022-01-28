@@ -119,3 +119,12 @@ int move_piece(position origin, position target, board *game) {
   free(valid_moves);
   return 0;
 }
+
+int is_in(position m, position *moves) {
+  int i = 0;
+  while (moves[i].file != -1 && moves[i].rank != -1) {
+	if (m.file == moves[i].file && m.rank == moves[i].rank) return 1;
+	i++;
+  }
+  return 0;
+}
