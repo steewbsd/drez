@@ -10,5 +10,5 @@ typedef struct {
 
 board *init_board();
 void free_board(board *game);
-int move(position origin, position target, board *game);
+int move_piece(position origin, position target, board *game);
 #endif

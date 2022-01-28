@@ -76,7 +76,7 @@ position *bishop_valid (position pos, cell game[SIZE_STD][SIZE_STD]) {
   /* we can approximate, in the worst case the bishop will take (board's diagonal length * 2) - 3 */
   const int max_length = SIZE_STD;
   position *valid_moves = malloc(sizeof(position)*max_length+sizeof(position)); /* allocate vertical + horizontal moves + sentinel */
-  int i = 0, move_idx = 0;
+  int i = 1, move_idx = 0;
   /* first diagonal: top right */
   while (pos.rank + i < SIZE_STD && pos.file + i < SIZE_STD) {
 	valid_moves[move_idx++] = coords_to_pos(pos.rank + i, pos.file + i);
@@ -84,21 +84,21 @@ position *bishop_valid (position pos, cell game[SIZE_STD][SIZE_STD]) {
 	i++;
   }
   /* second diagonal: top left */
-  i = 0;
+  i = 1;
   while (pos.rank + i < SIZE_STD && pos.file - i >= 0) {
 	valid_moves[move_idx++] = coords_to_pos(pos.rank + i, pos.file - i);
 	if (game[pos.rank+i][pos.file-i].piece != NULL) break;
 	i++;
   }
   /* third diagonal: bottom left */
-  i = 0;
+  i = 1;
   while (pos.rank - i >= 0 && pos.file - i >= 0) {
 	valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file - i);
 	if (game[pos.rank-i][pos.file-i].piece != NULL) break;
 	i++;
   }
   /* fourth diagonal: bottom right */
-  i = 0;
+  i = 1;
   while (pos.rank - i < SIZE_STD && pos.file + i < SIZE_STD) {
 	valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file + i);
 	if (game[pos.rank-i][pos.file+i].piece != NULL) break;

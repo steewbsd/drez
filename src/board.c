@@ -1,6 +1,5 @@
 #include "board.h"
 #include "piece.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -65,7 +64,7 @@ board *init_board(char *fen) {
 
 void free_board(board *game) { free(game); }
 
-int move(position origin, position target, board *game) {
+int move_piece(position origin, position target, board *game) {
   /* we will use a position instead of a piece, as we just store
   all the currently utilized cells (or positions) in the game array.
   They will just point at the piece they hold, as there is only
@@ -77,12 +76,10 @@ int move(position origin, position target, board *game) {
   cell origin_cell = game->game[origin.rank][origin.file];
   cell target_cell = game->game[target.rank][target.file];
   if (origin_cell.piece == NULL) {
-    puts("null piece");
     return -1; /* no piece in the selected cell, error */
   }
 
   if (origin_cell.flags & FLAG_PIN) {
-    puts("pinned");
     return -1; /* piece is pinned, so can't move */
   }
   position *valid_moves = moves(origin_cell.piece, origin, game->game);
@@ -90,8 +87,8 @@ int move(position origin, position target, board *game) {
    * move to at this current position */
   int i = 0, found_move = 0;
   while (valid_moves[i].file != -1 && valid_moves[i].rank != -1) {
+	//printf("[%d %d]\n", valid_moves[i].rank, valid_moves[i].file);
 	/* check for sentinel value (end of array) */
-    printf("current position: [%d,%d]\n", valid_moves[i].rank, valid_moves[i].file);
     /* 	if (current_cell_piece != NULL && origin_cell.piece->ident != 'n') {
       puts("not knight, blocked");
       FREE_AND_FAIL(valid_moves)
@@ -105,7 +102,6 @@ int move(position origin, position target, board *game) {
     i++;
   }
   if (found_move == 0) {
-    puts("no found move");
     FREE_AND_FAIL(valid_moves) /* no move was found, return */
   }
   target_cell.piece =
