@@ -19,6 +19,7 @@ typedef struct {
 
 typedef struct { 
   char ident; /* FEN style piece identification */
+  char *pretty;
 } piece;
 
 typedef struct {

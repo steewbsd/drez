@@ -210,9 +210,9 @@ position *moves(piece *piece, position pos, cell game[SIZE_STD][SIZE_STD]) {
   }
 }
 
-piece rook = {'r'};
-piece knight = {'n'};
-piece bishop = {'b'};
-piece queen = {'q'};
-piece king = {'k'};
-piece pawn = {'p'};
+piece rook = {'r', "♖"};
+piece knight = {'n', "♘"};
+piece bishop = {'b', "♗"};
+piece queen = {'q', "♕"};
+piece king = {'k', "♔"};
+piece pawn = {'p', "♙"};
