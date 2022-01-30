@@ -3,15 +3,13 @@
 #include <string.h>
 
 position
-coords_to_pos(short rank, short file)
-{
+coords_to_pos(short rank, short file){
 	position	p = {rank, file};
 	return p;
 }
 
 SIDE
-opposite(SIDE orig)
-{
+opposite(SIDE orig) {
 	switch (orig) {
 	case WHITE:
 		return BLACK;

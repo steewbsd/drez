@@ -130,7 +130,9 @@ init_board(char *fen)
 	return game;
 }
 
-void		free_board(board * game) {
+void
+free_board(board * game)
+{
 	free(game);
 }
 
@@ -191,7 +193,7 @@ move_piece(position origin, position target, board * game)
 	/* toggle flags */
 	/* toggle first move to 0 */
 	target_cell.flags = origin_cell.flags & ~(FLAG_FIRSTMOVE);
-   	origin_cell.flags = 0;
+	origin_cell.flags = 0;
 
 
 	/* TODO: make use of FLAG_FIRSTMOVE to check for pawn movements */
