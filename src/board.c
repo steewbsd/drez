@@ -127,12 +127,11 @@ init_board(char *fen)
 			};
 		}
 	}
+	game->flags = FLAG_TURN;
 	return game;
 }
 
-void
-free_board(board * game)
-{
+void		free_board(board * game) {
 	free(game);
 }
 
@@ -157,6 +156,10 @@ move_piece(position origin, position target, board * game)
 
 	if (origin_cell.flags & FLAG_PIN) {
 		return -1;	/* piece is pinned, so can't move */
+	}
+
+	if ((origin_cell.side == WHITE && ((game->flags&FLAG_TURN)!=FLAG_TURN)) || (origin_cell.side == BLACK && ((game->flags&FLAG_TURN)==FLAG_TURN))){
+		return -1;
 	}
 	position       *valid_moves = moves(origin_cell.piece, origin, game->game);
 	/*
@@ -193,7 +196,7 @@ move_piece(position origin, position target, board * game)
 	/* toggle flags */
 	/* toggle first move to 0 */
 	target_cell.flags = origin_cell.flags & ~(FLAG_FIRSTMOVE);
-	origin_cell.flags = 0;
+   	origin_cell.flags = 0;
 
 
 	/* TODO: make use of FLAG_FIRSTMOVE to check for pawn movements */
@@ -201,6 +204,7 @@ move_piece(position origin, position target, board * game)
 	game->game[origin.rank][origin.file] = origin_cell;
 	free(valid_moves);
 	return 0;
+	game->flags ^= FLAG_TURN;
 }
 
 int
