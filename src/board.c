@@ -152,7 +152,8 @@ move_piece(position origin, position target, board * game)
 	cell		origin_cell = game->game[origin.rank][origin.file];
 	cell		target_cell = game->game[target.rank][target.file];
 	if (origin_cell.piece == NULL) {
-		FREE_AND_FAIL(NULL);	/* no piece in the selected cell, error */
+		FREE_AND_FAIL(NULL);	/* no piece in the selected cell,
+					 * error */
 	}
 
 	if (origin_cell.flags & FLAG_PIN) {
@@ -160,16 +161,16 @@ move_piece(position origin, position target, board * game)
 	}
 
 	if ((game->game_flags & FLAG_TURN_WHITE) && origin_cell.side != WHITE) {
-	  FREE_AND_FAIL(NULL);
+		FREE_AND_FAIL(NULL);
 	} else if (game->game_flags & FLAG_TURN_BLACK && origin_cell.side != BLACK) {
-	  FREE_AND_FAIL(NULL);
-	} 
+		FREE_AND_FAIL(NULL);
+	}
 
 	/* check if any of the kings is in check */
 	if ((game->game_flags & FLAG_TURN_BLACK && game->game_flags & FLAG_CHECK_BLACK) ||
-		(game->game_flags & FLAG_TURN_WHITE && game->game_flags & FLAG_CHECK_WHITE)) {
-	  FREE_AND_FAIL(NULL)
-		}
+	    (game->game_flags & FLAG_TURN_WHITE && game->game_flags & FLAG_CHECK_WHITE)) {
+		FREE_AND_FAIL(NULL)
+	}
 	position       *valid_moves = moves(origin_cell.piece, origin, game->game, &game->game_flags);
 	/*
 	 * check if move is valid by traversing the list of cells the piece
@@ -197,7 +198,7 @@ move_piece(position origin, position target, board * game)
 	game->game[target.rank][target.file] = target_cell;
 	game->game[origin.rank][origin.file] = origin_cell;
 	free(valid_moves);
-	
+
 	game->game_flags ^= FLAG_TURN_WHITE;
 	game->game_flags ^= FLAG_TURN_BLACK;
 	return 0;

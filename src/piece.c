@@ -22,28 +22,30 @@ opposite(SIDE orig) {
 	}
 }
 
-uint8_t check_if_king(position target, cell game[SIZE_STD][SIZE_STD],
-					  uint8_t game_flags) {
-  uint8_t flags = game_flags;
-  if (game[target.rank][target.file].piece != NULL && game[target.rank][target.file].piece->ident == 'k') {
-	switch (game[target.rank][target.file].side) {
-	case BLACK:
-	  printf("BLACK CHECK");
-	  flags |= FLAG_CHECK_BLACK;
-	  break;
-	case WHITE:
-	  printf("WHITE CHECK");
-	  flags |= FLAG_CHECK_WHITE;
-	  break;
-	default:
-	  break;
+uint8_t
+check_if_king(position target, cell game[SIZE_STD][SIZE_STD],
+	      uint8_t game_flags)
+{
+	uint8_t		flags = game_flags;
+	if (game[target.rank][target.file].piece != NULL && game[target.rank][target.file].piece->ident == 'k') {
+		switch (game[target.rank][target.file].side) {
+		case BLACK:
+			printf("BLACK CHECK");
+			flags |= FLAG_CHECK_BLACK;
+			break;
+		case WHITE:
+			printf("WHITE CHECK");
+			flags |= FLAG_CHECK_WHITE;
+			break;
+		default:
+			break;
+		}
 	}
-  }
-  return flags;
+	return flags;
 }
 
 position       *
-rook_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
+rook_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 {
 	const int	max_length = (SIZE_STD - 1) * 2;	/* a rook can move ( not
 								 * counting other pieces
@@ -114,7 +116,7 @@ rook_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
 }
 
 position       *
-knight_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
+knight_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 {
 	const int	max_length = 8;
 	position       *valid_moves = malloc(sizeof(position) * max_length + sizeof(position));
@@ -139,7 +141,7 @@ knight_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
 }
 
 position       *
-bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
+bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 {
 	/*
 	 * we can approximate, in the worst case the bishop will take
@@ -211,10 +213,10 @@ bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
 }
 
 position       *
-queen_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
+queen_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 {
-  position       *bishop_moves = bishop_valid(pos, game, game_flags);
-  position       *rook_moves = rook_valid(pos, game, game_flags);
+	position       *bishop_moves = bishop_valid(pos, game, game_flags);
+	position       *rook_moves = rook_valid(pos, game, game_flags);
 	int		bishop_moves_len, rook_moves_len;
 	for (bishop_moves_len = 0; bishop_moves[bishop_moves_len].file != -1; bishop_moves_len++)
 		;
@@ -231,7 +233,7 @@ queen_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
 }
 
 position       *
-king_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
+king_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 {
 	int		move_idx = 0;
 	const int	max_length = 8;
@@ -252,7 +254,7 @@ king_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
 }
 
 position       *
-pawn_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
+pawn_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 {
 	int		max_length = 4;
 	position       *valid_moves =
@@ -272,20 +274,20 @@ pawn_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
 		valid_moves[move_idx++] = coords_to_pos(pos.rank + side_sign, pos.file + side_sign);
 	}
 	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
-		
+
 	if (game[pos.rank + side_sign][pos.file - side_sign].piece != NULL &&
 	    game[pos.rank + side_sign][pos.file - side_sign].side ==
 	    opposite(game[pos.rank][pos.file].side)) {
 		valid_moves[move_idx++] = coords_to_pos(pos.rank + side_sign, pos.file - side_sign);
 	}
 	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
-	
+
 	valid_moves[move_idx] = SENTINEL;
 	return valid_moves;
 }
 
 position *
-moves(piece * piece, position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags)
+moves(piece * piece, position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 {
 	switch (piece->ident) {
 	case 'r':
@@ -319,10 +321,7 @@ piece		king = {'k', "♔"};
 piece		pawn = {'p', "♙"};
 
 /*
-piece		rook = {'r', "R"};
-piece		knight = {'n', "N"};
-piece		bishop = {'b', "B"};
-piece		queen = {'q', "Q"};
-piece		king = {'k', "K"};
-piece		pawn = {'p', "P"};
-*/
+ * piece		rook = {'r', "R"}; piece		knight = {'n', "N"};
+ * piece		bishop = {'b', "B"}; piece		queen = {'q', "Q"};
+ * piece		king = {'k', "K"}; piece		pawn = {'p', "P"};
+ */
