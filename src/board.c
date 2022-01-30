@@ -127,6 +127,7 @@ init_board(char *fen)
 			};
 		}
 	}
+	game->flags = TURN;
 	return game;
 }
 
