@@ -5,6 +5,9 @@
 #include <locale.h>
 #include <math.h>
 
+#define WHITE_CELL 1
+#define BLUE_CELL 2
+
 int
 main()
 {
@@ -15,6 +18,10 @@ main()
 	initscr();
 	noecho();
 	cbreak();
+	start_color();
+
+	init_pair(WHITE_CELL, COLOR_BLACK, COLOR_CYAN);
+	init_pair(BLUE_CELL, COLOR_WHITE, COLOR_BLACK);
 
 	int		min_size = fmin(COLS, LINES);
 	int		cell_size = min_size / SIZE_STD;
@@ -35,7 +42,8 @@ main()
 	for (int row = 0; row < SIZE_STD; row++) {
 		for (int col = 0; col < SIZE_STD; col++) {
 			ui_board[row][col] = subwin(win, cell_size, cell_size * 2, row * cell_size, padding + cell_size * col * 2);
-			box(ui_board[row][col], 0, 0);
+			//box(ui_board[row][col], 0, 0);
+			wbkgd(ui_board[row][col],COLOR_PAIR( ((row + col) % 2 == 0) ? BLUE_CELL : WHITE_CELL) );
 			touchwin(win);
 			if (game_board->game[row][col].piece == NULL)
 				continue;

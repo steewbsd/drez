@@ -290,3 +290,12 @@ piece		bishop = {'b', "♗"};
 piece		queen = {'q', "♕"};
 piece		king = {'k', "♔"};
 piece		pawn = {'p', "♙"};
+
+/*
+piece		rook = {'r', "R"};
+piece		knight = {'n', "N"};
+piece		bishop = {'b', "B"};
+piece		queen = {'q', "Q"};
+piece		king = {'k', "K"};
+piece		pawn = {'p', "P"};
+*/
