@@ -4,12 +4,10 @@
 
 #define SIZE_STD 8
 #define SENTINEL coords_to_pos(-1, -1);
-#define FLAG_PIN       0x1	/* block piece when it would discover a check */
-#define FLAG_CHECK     0x2	/* block moves when king is in check
-				 * (additional checking should be done for
-				 * moves preventing check) */
+#define FLAG_CHECK_WHITE 0x1
+#define FLAG_CHECK_BLACK 0x2
 #define FLAG_FIRSTMOVE 0x4	/* for castles and pawn starts */
-
+#define FLAG_PIN       0x8 /* block piece when it would discover a check */
 
 typedef enum {
 	BLACK, WHITE, NONE
@@ -31,7 +29,7 @@ typedef struct {
 	uint8_t		flags;
 } cell;
 
-position *	moves(piece * piece, position pos, cell game[SIZE_STD][SIZE_STD]);
+position *	moves(piece * piece, position pos, cell game[SIZE_STD][SIZE_STD], uint8_t *game_flags);
 extern piece rook, bishop, knight, queen, pawn, king;
 position	coords_to_pos(short rank, short file);
 #endif

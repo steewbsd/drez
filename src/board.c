@@ -166,11 +166,11 @@ move_piece(position origin, position target, board * game)
 	} 
 
 	/* check if any of the kings is in check */
-	/*	if ((game->game_flags & FLAG_TURN && game->game_flags & FLAG_CHECK_BLACK) ||
-		(!(game->game_flags & FLAG_TURN) && game->game_flags & FLAG_CHECK_WHITE)) {
+	if ((game->game_flags & FLAG_TURN_BLACK && game->game_flags & FLAG_CHECK_BLACK) ||
+		(game->game_flags & FLAG_TURN_WHITE && game->game_flags & FLAG_CHECK_WHITE)) {
 	  FREE_AND_FAIL(NULL)
-	}*/
-	position       *valid_moves = moves(origin_cell.piece, origin, game->game);
+		}
+	position       *valid_moves = moves(origin_cell.piece, origin, game->game, &game->game_flags);
 	/*
 	 * check if move is valid by traversing the list of cells the piece
 	 * is able to move to at this current position

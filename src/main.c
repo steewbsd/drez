@@ -97,7 +97,7 @@ main()
 				origin = coords_to_pos(sel_row, sel_col);
 				if (game_board->game[sel_row][sel_col].piece == NULL)
 					break;
-				amoves = moves(game_board->game[sel_row][sel_col].piece, coords_to_pos(sel_row, sel_col), game_board->game);
+				amoves = moves(game_board->game[sel_row][sel_col].piece, coords_to_pos(sel_row, sel_col), game_board->game, &game_board->game_flags);
 				for (int i = 0; amoves[i].rank != -1; i++) {
 					wmove(ui_board[amoves[i].rank][amoves[i].file], cell_size / 2, cell_size / 2);
 					waddstr(ui_board[amoves[i].rank][amoves[i].file], "o");
