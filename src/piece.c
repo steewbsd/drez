@@ -173,7 +173,7 @@ bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD])
 
 	/* fourth diagonal: bottom right */
 	i = 1;
-	while (pos.rank - i < SIZE_STD && pos.file + i < SIZE_STD) {
+	while (pos.rank - i >= 0 && pos.file + i < SIZE_STD) {
 		if (game[pos.rank - i][pos.file + i].piece != NULL) {
 			if (game[pos.rank - i][pos.file + i].side == opposite(game[pos.rank][pos.file].side)) {
 				valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file + i);
