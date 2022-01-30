@@ -201,6 +201,8 @@ queen_valid(position pos, cell game[SIZE_STD][SIZE_STD])
 	position       *valid_moves = malloc(sizeof(position) * total_len + sizeof(position));
 	memcpy(valid_moves, bishop_moves, bishop_moves_len * sizeof(position));
 	memcpy(valid_moves + bishop_moves_len, rook_moves, rook_moves_len * sizeof(position));
+	free(bishop_moves);
+	free(rook_moves);
 	valid_moves[bishop_moves_len + rook_moves_len] = SENTINEL;
 	return valid_moves;
 }
