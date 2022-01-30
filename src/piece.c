@@ -22,14 +22,14 @@ opposite(SIDE orig) {
 }
 
 uint8_t
-check_if_king(position *valid_moves, int move_idx, cell game[SIZE_STD][SIZE_STD],
-	      uint8_t game_flags)
-{
-    if (move_idx == 0 || valid_moves == NULL) return game_flags;
+check_if_king(position * valid_moves, int move_idx, cell game[SIZE_STD][SIZE_STD],
+	      uint8_t game_flags){
+	if (move_idx == 0 || valid_moves == NULL)
+		return game_flags;
 	uint8_t		flags = game_flags;
-	if (game[valid_moves[move_idx-1].rank][valid_moves[move_idx-1].file].piece != NULL &&
-		game[valid_moves[move_idx-1].rank][valid_moves[move_idx-1].file].piece->ident == 'k') {
-		switch (game[valid_moves[move_idx-1].rank][valid_moves[move_idx-1].file].side) {
+	if (game[valid_moves[move_idx - 1].rank][valid_moves[move_idx - 1].file].piece != NULL &&
+	    game[valid_moves[move_idx - 1].rank][valid_moves[move_idx - 1].file].piece->ident == 'k') {
+		switch (game[valid_moves[move_idx - 1].rank][valid_moves[move_idx - 1].file].side) {
 		case BLACK:
 			flags |= FLAG_CHECK_BLACK;
 			break;
