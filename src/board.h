@@ -3,7 +3,7 @@
 #include "piece.h"
 #define WHITE_CHECK 0x1
 #define BLACK_CHECK 0x2
-#define TURN 0x4
+#define FLAG_TURN 0x4
 
 typedef struct {
 	/* TODO: piece location hash table */

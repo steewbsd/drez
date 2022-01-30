@@ -104,11 +104,11 @@ knight_valid(position pos, cell game[SIZE_STD][SIZE_STD])
 			position	coords_v = coords_to_pos(pos.rank + i, pos.file + j);
 			position	coords_h = coords_to_pos(pos.rank + j, pos.file + i);
 			if (!(coords_v.file < 0 || coords_v.rank < 0 ||
-			      coords_v.file > SIZE_STD || coords_v.rank > SIZE_STD || game[pos.rank + i][pos.file + j].side == game[pos.rank][pos.file].side)) {
+			      coords_v.file >= SIZE_STD || coords_v.rank >= SIZE_STD || game[pos.rank + i][pos.file + j].side == game[pos.rank][pos.file].side)) {
 				valid_moves[move_idx++] = coords_v;
 			}
 			if (!(coords_h.file < 0 || coords_h.rank < 0 ||
-			      coords_h.file > SIZE_STD || coords_h.rank > SIZE_STD || game[pos.rank + j][pos.file + i].side == game[pos.rank][pos.file].side)) {
+			      coords_h.file >= SIZE_STD || coords_h.rank >= SIZE_STD || game[pos.rank + j][pos.file + i].side == game[pos.rank][pos.file].side)) {
 				valid_moves[move_idx++] = coords_h;
 			}
 		}
