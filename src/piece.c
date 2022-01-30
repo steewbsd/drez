@@ -23,20 +23,20 @@ opposite(SIDE orig) {
 position       *
 rook_valid(position pos, cell game[SIZE_STD][SIZE_STD])
 {
-	const int	max_length = SIZE_STD - 1;	/* a rook can move ( not
-							 * counting other pieces
-							 * ) a total of size of
-							 * one side - 1 (to
-							 * exclude current
-							 * position) */
-	position       *valid_moves = malloc(sizeof(position) * max_length * 2 + sizeof(position));	/* allocate vertical +
-													 * horizontal moves,
-													 * intentionally left
-													 * the +
-													 * sizeof(position) to
-													 * clarify that's
-													 * reserved for the
-													 * sentinel */
+	const int	max_length = (SIZE_STD - 1) * 2;	/* a rook can move ( not
+								 * counting other pieces
+								 * ) a total of size of
+								 * one side - 1 (to
+								 * exclude current
+								 * position) */
+	position       *valid_moves = malloc(sizeof(position) * max_length + sizeof(position));	/* allocate vertical +
+												 * horizontal moves,
+												 * intentionally left
+												 * the +
+												 * sizeof(position) to
+												 * clarify that's
+												 * reserved for the
+												 * sentinel */
 	int		move_idx = 0;
 
 	/* Line up */
@@ -122,7 +122,7 @@ bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD])
 	 * we can approximate, in the worst case the bishop will take
 	 * (board's diagonal length * 2) - 3
 	 */
-	const int	max_length = SIZE_STD*2;
+	const int	max_length = SIZE_STD * 2;
 	position       *valid_moves = malloc(sizeof(position) * max_length + sizeof(position));	/* allocate vertical +
 												 * horizontal moves +
 												 * sentinel */
