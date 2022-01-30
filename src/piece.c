@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 position
 coords_to_pos(short rank, short file){
@@ -23,18 +22,18 @@ opposite(SIDE orig) {
 }
 
 uint8_t
-check_if_king(position target, cell game[SIZE_STD][SIZE_STD],
+check_if_king(position *valid_moves, int move_idx, cell game[SIZE_STD][SIZE_STD],
 	      uint8_t game_flags)
 {
+    if (move_idx == 0 || valid_moves == NULL) return game_flags;
 	uint8_t		flags = game_flags;
-	if (game[target.rank][target.file].piece != NULL && game[target.rank][target.file].piece->ident == 'k') {
-		switch (game[target.rank][target.file].side) {
+	if (game[valid_moves[move_idx-1].rank][valid_moves[move_idx-1].file].piece != NULL &&
+		game[valid_moves[move_idx-1].rank][valid_moves[move_idx-1].file].piece->ident == 'k') {
+		switch (game[valid_moves[move_idx-1].rank][valid_moves[move_idx-1].file].side) {
 		case BLACK:
-			printf("BLACK CHECK");
 			flags |= FLAG_CHECK_BLACK;
 			break;
 		case WHITE:
-			printf("WHITE CHECK");
 			flags |= FLAG_CHECK_WHITE;
 			break;
 		default:
@@ -74,7 +73,7 @@ rook_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 		}
 		valid_moves[move_idx++] = coords_to_pos(row, pos.file);
 	}
-	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 	/* Line down */
 	for (int row = pos.rank - 1; row >= 0; row--) {
 		if (game[row][pos.file].piece != NULL) {
@@ -86,7 +85,7 @@ rook_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 		}
 		valid_moves[move_idx++] = coords_to_pos(row, pos.file);
 	}
-	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 	/* Line left */
 	for (int col = pos.file - 1; col >= 0; col--) {
 		if (game[pos.rank][col].piece != NULL) {
@@ -98,7 +97,7 @@ rook_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 		}
 		valid_moves[move_idx++] = coords_to_pos(pos.rank, col);
 	}
-	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 	/* Line right */
 	for (int col = pos.file + 1; col < SIZE_STD; col++) {
 		if (game[pos.rank][col].piece != NULL) {
@@ -110,7 +109,7 @@ rook_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 		}
 		valid_moves[move_idx++] = coords_to_pos(pos.rank, col);
 	}
-	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 	valid_moves[move_idx] = SENTINEL;
 	return valid_moves;
 }
@@ -133,7 +132,7 @@ knight_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 			      coords_h.file >= SIZE_STD || coords_h.rank >= SIZE_STD || game[pos.rank + j][pos.file + i].side == game[pos.rank][pos.file].side)) {
 				valid_moves[move_idx++] = coords_h;
 			}
-			*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+			*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 		}
 	}
 	valid_moves[move_idx] = SENTINEL;
@@ -165,7 +164,7 @@ bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 		valid_moves[move_idx++] = coords_to_pos(pos.rank + i, pos.file + i);
 		i++;
 	}
-	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 	/* second diagonal: top left */
 	i = 1;
 	while (pos.rank + i < SIZE_STD && pos.file - i >= 0) {
@@ -179,7 +178,7 @@ bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 		valid_moves[move_idx++] = coords_to_pos(pos.rank + i, pos.file - i);
 		i++;
 	}
-	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 	/* third diagonal: bottom left */
 	i = 1;
 	while (pos.rank - i >= 0 && pos.file - i >= 0) {
@@ -193,7 +192,7 @@ bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 		valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file - i);
 		i++;
 	}
-	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 	/* fourth diagonal: bottom right */
 	i = 1;
 	while (pos.rank - i >= 0 && pos.file + i < SIZE_STD) {
@@ -207,7 +206,7 @@ bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 		valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file + i);
 		i++;
 	}
-	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 	valid_moves[move_idx] = SENTINEL;
 	return valid_moves;
 }
@@ -273,14 +272,14 @@ pawn_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 	    opposite(game[pos.rank][pos.file].side)) {
 		valid_moves[move_idx++] = coords_to_pos(pos.rank + side_sign, pos.file + side_sign);
 	}
-	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 
 	if (game[pos.rank + side_sign][pos.file - side_sign].piece != NULL &&
 	    game[pos.rank + side_sign][pos.file - side_sign].side ==
 	    opposite(game[pos.rank][pos.file].side)) {
 		valid_moves[move_idx++] = coords_to_pos(pos.rank + side_sign, pos.file - side_sign);
 	}
-	*game_flags = check_if_king(valid_moves[move_idx], game, *game_flags);
+	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 
 	valid_moves[move_idx] = SENTINEL;
 	return valid_moves;

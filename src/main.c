@@ -7,6 +7,7 @@
 
 #define WHITE_CELL 1
 #define BLUE_CELL 2
+#define CHECK_CELL 3
 
 int
 main()
@@ -22,6 +23,7 @@ main()
 
 	init_pair(WHITE_CELL, COLOR_BLACK, COLOR_CYAN);
 	init_pair(BLUE_CELL, COLOR_WHITE, COLOR_BLACK);
+	init_pair(CHECK_CELL, COLOR_WHITE, COLOR_RED);
 
 	int		min_size = fmin(COLS, LINES);
 	int		cell_size = min_size / SIZE_STD;
