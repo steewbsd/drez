@@ -122,7 +122,7 @@ bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD])
 	 * we can approximate, in the worst case the bishop will take
 	 * (board's diagonal length * 2) - 3
 	 */
-	const int	max_length = SIZE_STD;
+	const int	max_length = SIZE_STD*2;
 	position       *valid_moves = malloc(sizeof(position) * max_length + sizeof(position));	/* allocate vertical +
 												 * horizontal moves +
 												 * sentinel */
