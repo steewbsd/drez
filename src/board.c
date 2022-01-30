@@ -186,13 +186,13 @@ move_piece(position origin, position target, board * game)
 		origin_cell.piece;	/* set the new position to point to
 					 * the piece */
 	origin_cell.piece = NULL;	/* erase the piece from the origin */
-	origin_cell.flags = 0;
 	target_cell.side = origin_cell.side;	/* copy piece side */
 	origin_cell.side = NONE;
 	/* toggle flags */
 	/* toggle first move to 0 */
 	target_cell.flags = origin_cell.flags & ~(FLAG_FIRSTMOVE);
-	/* clear up the rest ... */
+   	origin_cell.flags = 0;
+
 
 	/* TODO: make use of FLAG_FIRSTMOVE to check for pawn movements */
 	game->game[target.rank][target.file] = target_cell;
