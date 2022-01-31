@@ -73,7 +73,9 @@ main()
 		case 'c':
 			if (selected) {
 				target = coords_to_pos(sel_row, sel_col);
-				int		valid = move_piece(origin, target, game_board);
+				int	valid = is_valid(origin, target, game_board,amoves);
+				if (valid!=-1) just_move_piece(origin, target, game_board);
+				else printf("valid\n");
 				for (int i = 0; amoves[i].rank != -1; i++) {
 					wmove(ui_board[amoves[i].rank][amoves[i].file], cell_size / 2, cell_size / 2);
 					waddstr(ui_board[amoves[i].rank][amoves[i].file],
