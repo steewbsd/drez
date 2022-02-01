@@ -92,7 +92,6 @@ int
 validate_move(position origin, position target, board * game, position * amoves)
 {
 	cell		origin_cell = game->game[origin.rank][origin.file];
-	cell		target_cell = game->game[target.rank][target.file];
 	int		allocated_by_me = 0;
 	/* quick check for turn */
 	if (((game->game_flags & FLAG_TURN_WHITE) && origin_cell.side != WHITE) ||
