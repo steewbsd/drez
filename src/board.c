@@ -132,7 +132,9 @@ init_board(char *fen)
 	return game;
 }
 
-void		free_board(board * game) {
+void
+free_board(board * game)
+{
 	free(game);
 }
 
@@ -164,7 +166,7 @@ validate_move(position origin, position target, board * game, position * amoves)
 		return ERROR;
 	/* check if move would not actually move */
 	if (origin.file == target.file && origin.rank == target.rank)
-	    return ERROR;
+		return ERROR;
 	/*
 	 * current side has an ongoing check so cannot move (TODO: check if
 	 * move would un-check)
