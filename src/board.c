@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define ERROR -1
+
 #define FREE_AND_FAIL(x)                                                       \
   free(x);                                                                     \
   return -1;
@@ -130,58 +132,69 @@ init_board(char *fen)
 	return game;
 }
 
-void
-free_board(board * game)
-{
+void		free_board(board * game) {
 	free(game);
 }
 
+/*
+ * we will use a position instead of a piece, as we just store all the
+ * currently utilized cells (or positions) in the game array. They will just
+ * point at the piece they hold, as there is only one instance of each piece.
+ * We will just have a shared pointer between all cells for the same piece,
+ * for example, the four bishops will just be stored as four entries in the
+ * array, with their position as the array indices, and the data they point
+ * to is the same *bishop variable.
+ */
 int
-move_piece(position origin, position target, board * game)
+validate_move(position origin, position target, board * game, position * amoves)
 {
-	/*
-	 * we will use a position instead of a piece, as we just store all
-	 * the currently utilized cells (or positions) in the game array.
-	 * They will just point at the piece they hold, as there is only one
-	 * instance of each piece. We will just have a shared pointer between
-	 * all cells for the same piece, for example, the four bishops will
-	 * just be stored as four entries in the array, with their position
-	 * as the array indices, and the data they point to is the same
-	 * *bishop variable.
-	 */
 	cell		origin_cell = game->game[origin.rank][origin.file];
 	cell		target_cell = game->game[target.rank][target.file];
-	if (origin_cell.piece == NULL) {
-		FREE_AND_FAIL(NULL);	/* no piece in the selected cell,
-					 * error */
-	}
+	int		allocated_by_me = 0;
+	/* quick check for turn */
+	if (((game->game_flags & FLAG_TURN_WHITE) && origin_cell.side != WHITE) ||
+	  (game->game_flags & FLAG_TURN_BLACK && origin_cell.side != BLACK))
+		return ERROR;
 
-	if (origin_cell.flags & FLAG_PIN) {
-		FREE_AND_FAIL(NULL);	/* piece is pinned, so can't move */
-	}
+	/* no piece in the selected cell */
+	if (origin_cell.piece == NULL)
+		return ERROR;
+	/* piece is pinned, so can't move */
+	if (origin_cell.flags & FLAG_PIN)
+		return ERROR;
 
-	if ((game->game_flags & FLAG_TURN_WHITE) && origin_cell.side != WHITE) {
-		FREE_AND_FAIL(NULL);
-	} else if (game->game_flags & FLAG_TURN_BLACK && origin_cell.side != BLACK) {
-		FREE_AND_FAIL(NULL);
-	}
-
-	/* check if any of the kings is in check */
-	if ((game->game_flags & FLAG_TURN_BLACK && game->game_flags & FLAG_CHECK_BLACK) ||
-	    (game->game_flags & FLAG_TURN_WHITE && game->game_flags & FLAG_CHECK_WHITE)) {
-		FREE_AND_FAIL(NULL)
-	}
-	position       *valid_moves = moves(origin_cell.piece, origin, game->game, &game->game_flags);
 	/*
-	 * check if move is valid by traversing the list of cells the piece
-	 * is able to move to at this current position
+	 * current side has an ongoing check so cannot move (TODO: check if
+	 * move would un-check)
 	 */
+	if ((game->game_flags & FLAG_TURN_BLACK && game->game_flags & FLAG_CHECK_BLACK) ||
+	    (game->game_flags & FLAG_TURN_WHITE && game->game_flags & FLAG_CHECK_WHITE))
+		return ERROR;
+
+	/* assign passed moves array, else calculate it */
+	position       *valid_moves = amoves;
+	if (valid_moves == NULL) {
+		valid_moves = moves(origin_cell.piece, origin, game->game, &game->game_flags);
+		allocated_by_me = 1;
+	}
+
 	int		found_move = 0;
 	found_move = is_in(target, valid_moves);
+	if (allocated_by_me)
+		free(valid_moves);	/* free move list if WE called the
+					 * moves() function */
+	return found_move;
+}
 
-	if (found_move == 0) {
-		FREE_AND_FAIL(valid_moves)	/* no move was found, return */
-	}
+int
+move_piece(position origin, position target, board * game, position * amoves)
+{
+	cell		origin_cell = game->game[origin.rank][origin.file];
+	cell		target_cell = game->game[target.rank][target.file];
+
+	int		valid = validate_move(origin, target, game, amoves);
+	if (valid == ERROR)
+		return ERROR;
 	target_cell.piece =
 		origin_cell.piece;	/* set the new position to point to
 					 * the piece */
@@ -197,7 +210,6 @@ move_piece(position origin, position target, board * game)
 	/* TODO: make use of FLAG_FIRSTMOVE to check for pawn movements */
 	game->game[target.rank][target.file] = target_cell;
 	game->game[origin.rank][origin.file] = origin_cell;
-	free(valid_moves);
 
 	game->game_flags ^= FLAG_TURN_WHITE;
 	game->game_flags ^= FLAG_TURN_BLACK;
