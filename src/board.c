@@ -182,7 +182,7 @@ validate_move(position origin, position target, board * game, position * amoves)
 		allocated_by_me = 1;
 	}
 
-	int		found_move = 0;
+	int		found_move = ERROR;
 	found_move = is_in(target, valid_moves);
 	if (allocated_by_me)
 		free(valid_moves);	/* free move list if WE called the
@@ -226,8 +226,8 @@ is_in(position m, position * moves)
 	int		i = 0;
 	while (moves[i].file != -1 && moves[i].rank != -1) {
 		if (m.file == moves[i].file && m.rank == moves[i].rank)
-			return 1;
+			return 0;
 		i++;
 	}
-	return 0;
+	return -1;
 }
