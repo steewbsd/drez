@@ -73,7 +73,9 @@ main()
 		case 'c':
 			if (selected) {
 				target = coords_to_pos(sel_row, sel_col);
-				int		valid = move_piece(origin, target, game_board, amoves);
+				int		valid = validate_move(origin, target, game_board, amoves);
+
+				/* clean all the hints */
 				for (int i = 0; amoves[i].rank != -1; i++) {
 					wmove(ui_board[amoves[i].rank][amoves[i].file], cell_size / 2, cell_size / 2);
 					waddstr(ui_board[amoves[i].rank][amoves[i].file],
@@ -82,28 +84,56 @@ main()
 
 					wrefresh(ui_board[amoves[i].rank][amoves[i].file]);
 				}
+				
+				if (valid == -1) {
+				  free(amoves);
+				  amoves = NULL;
+				  selected = 0;
+				  break;
+				}
+
+				/* move the piece */
+				move_piece(origin, target, game_board, amoves);
+
+				/* clean the possible moves as we do not need them anymore after validation */
 				free(amoves);
 				amoves = NULL;
 				selected = 0;
-				if (valid == -1)
-					break;
+				
+				/* fill original cell with an empty piece */
 				wmove(ui_board[origin.rank][origin.file], cell_size / 2, cell_size / 2);
 				waddstr(ui_board[origin.rank][origin.file], " ");
 
+				/* fill target cell with the new piece symbol */
 				wmove(ui_board[target.rank][target.file], cell_size / 2, cell_size / 2);
 				waddstr(ui_board[target.rank][target.file], game_board->game[target.rank][target.file].piece->pretty);
 
+				/* refresh both subwindows */
 				wrefresh(ui_board[origin.rank][origin.file]);
 				wrefresh(ui_board[target.rank][target.file]);
+				
 			} else {
 				origin = coords_to_pos(sel_row, sel_col);
+				/* if selected piece cell is empty, ignore it */
 				if (game_board->game[sel_row][sel_col].piece == NULL)
 					break;
-				amoves = moves(game_board->game[sel_row][sel_col].piece, coords_to_pos(sel_row, sel_col), game_board->game, &game_board->game_flags);
+				
+				/* generate all possible valid moves for chosen piece */
+				amoves = moves(game_board->game[sel_row][sel_col].piece, coords_to_pos(sel_row, sel_col),
+							   game_board->game, &game_board->game_flags);
+				/* if no moves have been returned, ignore */
+				if (amoves == NULL) break;
+
+				/* draw all possible moves as hints */
 				for (int i = 0; amoves[i].rank != -1; i++) {
 					wmove(ui_board[amoves[i].rank][amoves[i].file], cell_size / 2, cell_size / 2);
-					waddstr(ui_board[amoves[i].rank][amoves[i].file], "o");
-
+					/* draw an "x" if there would be a capturing move, else draw a "o" */
+					if (game_board->game[amoves[i].rank][amoves[i].file].piece != NULL) {
+					  waddstr(ui_board[amoves[i].rank][amoves[i].file], "x");
+					} else {
+					  waddstr(ui_board[amoves[i].rank][amoves[i].file], "o");
+					}
+					/* refresh hint subwindow */
 					wrefresh(ui_board[amoves[i].rank][amoves[i].file]);
 				}
 				selected = 1;

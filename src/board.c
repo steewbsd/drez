@@ -162,7 +162,9 @@ validate_move(position origin, position target, board * game, position * amoves)
 	/* piece is pinned, so can't move */
 	if (origin_cell.flags & FLAG_PIN)
 		return ERROR;
-
+	/* check if move would not actually move */
+	if (origin.file == target.file && origin.rank == target.rank)
+	    return ERROR;
 	/*
 	 * current side has an ongoing check so cannot move (TODO: check if
 	 * move would un-check)
