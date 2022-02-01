@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 position
 coords_to_pos(short rank, short file){
@@ -307,6 +308,27 @@ moves(piece * piece, position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game
 	case 'p':
 		return pawn_valid(pos, game, game_flags);
 		break;
+	default:
+		return NULL;
+	}
+}
+
+piece	       *
+ident_to_piece(char ident)
+{
+	switch (tolower(ident)) {
+	case 'r':
+		return &rook;
+	case 'n':
+		return &knight;
+	case 'b':
+		return &bishop;
+	case 'q':
+		return &queen;
+	case 'k':
+		return &king;
+	case 'p':
+		return &pawn;
 	default:
 		return NULL;
 	}

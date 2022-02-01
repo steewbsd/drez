@@ -9,6 +9,8 @@
 
 typedef struct {
 	uint8_t		game_flags;
+	position       *last_check_line;
+	cell		last_checking_piece;
 	cell		game[SIZE_STD][SIZE_STD];
 } board;
 

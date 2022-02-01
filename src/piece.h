@@ -32,4 +32,5 @@ typedef struct {
 position *	moves(piece * piece, position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags);
 extern piece rook, bishop, knight, queen, pawn, king;
 position	coords_to_pos(short rank, short file);
+piece	       *ident_to_piece(char ident);
 #endif
