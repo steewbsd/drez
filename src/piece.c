@@ -262,23 +262,36 @@ pawn_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 	int		side_sign = 1;
 	if (game[pos.rank][pos.file].side == BLACK)
 		side_sign = -1;
-	if (game[pos.rank + side_sign][pos.file].piece == NULL)
+	if (game[pos.rank + side_sign][pos.file].piece == NULL 
+		&& pos.rank + side_sign >= 0 
+		&& pos.file >= 0 
+		&& pos.rank + side_sign < SIZE_STD 
+		&& pos.file < SIZE_STD){
 		valid_moves[move_idx++] = coords_to_pos(pos.rank + side_sign, pos.file);
-	if (game[pos.rank][pos.file].flags & FLAG_FIRSTMOVE && game[pos.rank + 2 * side_sign][pos.file].piece == NULL && game[pos.rank + 1 * side_sign][pos.file].piece == NULL) {
+		}
+	if (game[pos.rank][pos.file].flags & FLAG_FIRSTMOVE 
+		&& game[pos.rank + 2 * side_sign][pos.file].piece == NULL 
+		&& game[pos.rank + 1 * side_sign][pos.file].piece == NULL){
 		valid_moves[move_idx++] = coords_to_pos(pos.rank + 2 * side_sign, pos.file);
-	}
-	if (game[pos.rank + side_sign][pos.file + side_sign].piece != NULL &&
-	    game[pos.rank + side_sign][pos.file + side_sign].side ==
-	    opposite(game[pos.rank][pos.file].side)) {
+		}
+	if (game[pos.rank + side_sign][pos.file + side_sign].piece != NULL 
+		&& game[pos.rank + side_sign][pos.file + side_sign].side == opposite(game[pos.rank][pos.file].side)
+		&& pos.rank + side_sign >= 0 
+		&& pos.file + side_sign >= 0 
+		&& pos.rank + side_sign < SIZE_STD 
+		&& pos.file + side_sign < SIZE_STD){
 		valid_moves[move_idx++] = coords_to_pos(pos.rank + side_sign, pos.file + side_sign);
-	}
+		}
 	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 
-	if (game[pos.rank + side_sign][pos.file - side_sign].piece != NULL &&
-	    game[pos.rank + side_sign][pos.file - side_sign].side ==
-	    opposite(game[pos.rank][pos.file].side)) {
+	if (game[pos.rank + side_sign][pos.file - side_sign].piece != NULL 
+		&& game[pos.rank + side_sign][pos.file - side_sign].side == opposite(game[pos.rank][pos.file].side)
+		&& pos.rank + side_sign >= 0 
+		&& pos.file - side_sign >= 0 
+		&& pos.rank + side_sign < SIZE_STD 
+		&& pos.file - side_sign < SIZE_STD){
 		valid_moves[move_idx++] = coords_to_pos(pos.rank + side_sign, pos.file - side_sign);
-	}
+		}
 	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
 
 	valid_moves[move_idx] = SENTINEL;

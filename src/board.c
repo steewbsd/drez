@@ -198,8 +198,26 @@ move_piece(position origin, position target, board * game, position * amoves)
 	int		valid = validate_move(origin, target, game, amoves);
 	if (valid == ERROR)
 		return ERROR;
-	target_cell.piece =
-		origin_cell.piece;	/* set the new position to point to
+		// check if promotion is availaile for pawn
+		if (origin_cell.piece->ident=='p'&&((origin_cell.side==BLACK&&target.rank==0)||(origin_cell.side==WHITE&&target.rank==7))){
+			char promo = 'q'; // change this to a piece decided by user unput in the tui
+			switch (promo) {
+				case 'q':
+					*target_cell.piece = queen;
+					break;
+				case 'k':
+					*target_cell.piece = knight;
+					break;
+				case 'b':
+					*target_cell.piece = bishop;
+					break;
+				case 'r':
+					*target_cell.piece = rook;
+					break;
+			}
+		} else {
+			target_cell.piece = origin_cell.piece;
+		}	/* set the new position to point to
 					 * the piece */
 	origin_cell.piece = NULL;	/* erase the piece from the origin */
 	target_cell.side = origin_cell.side;	/* copy piece side */
