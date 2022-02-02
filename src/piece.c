@@ -249,6 +249,22 @@ king_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 			}
 		}
 	}
+	/* check if castling is possible */
+	if ((game[pos.rank][pos.file].flags&FLAG_FIRSTMOVE)
+		&&(game[pos.rank][pos.file-4].piece->ident='r')
+		&&(game[pos.rank][pos.file-4].flags&FLAG_FIRSTMOVE)
+		&&(game[pos.rank][pos.file-3].piece==NULL)
+		&&(game[pos.rank][pos.file-2].piece==NULL)
+		&&(game[pos.rank][pos.file-1].piece==NULL)){
+			valid_moves[move_idx++] = coords_to_pos(pos.rank, pos.file - 2);
+		}
+	if ((game[pos.rank][pos.file].flags&FLAG_FIRSTMOVE)
+		&&(game[pos.rank][pos.file+3].piece->ident='r')
+		&&(game[pos.rank][pos.file+3].flags&FLAG_FIRSTMOVE)
+		&&(game[pos.rank][pos.file+2].piece=NULL)
+		&&(game[pos.rank][pos.file+1].piece=NULL)){
+			valid_moves[move_idx++] = coords_to_pos(pos.rank, pos.file + 2);
+		}
 	valid_moves[move_idx] = SENTINEL;
 	return valid_moves;
 }

@@ -109,6 +109,16 @@ move_piece(position origin, position target, board * game, position * amoves)
 		/* TODO:		ask for piece input */
 		target_cell.piece = ident_to_piece(promoted_sel);
 	}
+// check if the king is castling, if yes then move the rook too
+	if ((origin_cell.piece->ident == 'k')
+		&&(origin_cell.flags&FLAG_FIRSTMOVE)
+		&&(target.file == origin.file + 2)){
+			move_piece(coords_to_pos(origin.rank,origin.file+3),coords_to_pos(origin.rank,origin.file+1), game, amoves);
+		} else if ((origin_cell.piece->ident == 'k')
+		&&(origin_cell.flags&FLAG_FIRSTMOVE)
+		&&(target.file == origin.file - 2)){
+			move_piece(coords_to_pos(origin.rank,origin.file-4),coords_to_pos(origin.rank,origin.file-1), game, amoves);
+		}
 
 	origin_cell.piece = NULL;	/* erase the piece from the origin */
 	target_cell.side = origin_cell.side;	/* copy piece side */
