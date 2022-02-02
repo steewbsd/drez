@@ -1,5 +1,6 @@
 #include "board.h"
 #include "piece.h"
+#include "fmt_parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,117 +19,18 @@ init_board(char *fen)
 	if (game == NULL)
 		exit(1);
 	game->game_flags = FLAG_TURN_WHITE;
-	/* TODO: interpret FEN notation and initialize game with it */
-	/* a standard game will be created as as placeholder */
-	game->game[0][0] = (cell) {
-		&rook, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[0][1] = (cell) {
-		&knight, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[0][2] = (cell) {
-		&bishop, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[0][3] = (cell) {
-		&queen, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[0][4] = (cell) {
-		&king, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[0][5] = (cell) {
-		&bishop, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[0][6] = (cell) {
-		&knight, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[0][7] = (cell) {
-		&rook, WHITE, FLAG_FIRSTMOVE
-	};
-
-	game->game[7][0] = (cell) {
-		&rook, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[7][1] = (cell) {
-		&knight, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[7][2] = (cell) {
-		&bishop, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[7][3] = (cell) {
-		&queen, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[7][4] = (cell) {
-		&king, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[7][5] = (cell) {
-		&bishop, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[7][6] = (cell) {
-		&knight, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[7][7] = (cell) {
-		&rook, BLACK, FLAG_FIRSTMOVE
-	};
-
-	game->game[1][0] = (cell) {
-		&pawn, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[1][1] = (cell) {
-		&pawn, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[1][2] = (cell) {
-		&pawn, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[1][3] = (cell) {
-		&pawn, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[1][4] = (cell) {
-		&pawn, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[1][5] = (cell) {
-		&pawn, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[1][6] = (cell) {
-		&pawn, WHITE, FLAG_FIRSTMOVE
-	};
-	game->game[1][7] = (cell) {
-		&pawn, WHITE, FLAG_FIRSTMOVE
-	};
-
-	game->game[6][0] = (cell) {
-		&pawn, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[6][1] = (cell) {
-		&pawn, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[6][2] = (cell) {
-		&pawn, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[6][3] = (cell) {
-		&pawn, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[6][4] = (cell) {
-		&pawn, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[6][5] = (cell) {
-		&pawn, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[6][6] = (cell) {
-		&pawn, BLACK, FLAG_FIRSTMOVE
-	};
-	game->game[6][7] = (cell) {
-		&pawn, BLACK, FLAG_FIRSTMOVE
-	};
-
 
 	/* init empty cells */
-	for (int i = 2; i < 6; i++) {
+	for (int i = 0; i < SIZE_STD; i++) {
 		for (int j = 0; j < 8; j++) {
 			game->game[i][j] = (cell) {
 				NULL, NONE, 0
 			};
 		}
 	}
+	/* game will be imported from FEN notation (standard if omitted) */
+	fen_parser(fen, game->game);
+
 	return game;
 }
 

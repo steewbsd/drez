@@ -13,7 +13,7 @@
 int
 main()
 {
-	board	       *game_board = init_board();
+	board	       *game_board = init_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR/");
 	if (game_board == NULL)
 		printf("error initializing board...\n");
 	setlocale(LC_ALL, "");
