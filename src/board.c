@@ -35,6 +35,12 @@ init_board(char *fen)
 }
 
 void
+switch_turn(board * game){
+	game->game_flags ^= FLAG_TURN_WHITE;
+	game->game_flags ^= FLAG_TURN_BLACK;
+}
+
+void
 free_board(board * game)
 {
 	free(game);
@@ -114,10 +120,12 @@ move_piece(position origin, position target, board * game, position * amoves)
 		&&(origin_cell.flags&FLAG_FIRSTMOVE)
 		&&(target.file == origin.file + 2)){
 			move_piece(coords_to_pos(origin.rank,origin.file+3),coords_to_pos(origin.rank,origin.file+1), game, amoves);
+			switch_turn(game);
 		} else if ((origin_cell.piece->ident == 'k')
 		&&(origin_cell.flags&FLAG_FIRSTMOVE)
 		&&(target.file == origin.file - 2)){
 			move_piece(coords_to_pos(origin.rank,origin.file-4),coords_to_pos(origin.rank,origin.file-1), game, amoves);
+			switch_turn(game);
 		}
 
 	target_cell.piece = origin_cell.piece;
@@ -134,8 +142,7 @@ move_piece(position origin, position target, board * game, position * amoves)
 	game->game[target.rank][target.file] = target_cell;
 	game->game[origin.rank][origin.file] = origin_cell;
 
-	game->game_flags ^= FLAG_TURN_WHITE;
-	game->game_flags ^= FLAG_TURN_BLACK;
+	switch_turn(game);
 	return 0;
 }
 
