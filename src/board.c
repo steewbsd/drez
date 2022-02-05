@@ -29,7 +29,7 @@ init_board(char *fen)
 		}
 	}
 	/* game will be imported from FEN notation (standard if omitted) */
-	fen_parser(fen, game->game);
+	fen_parser(fen, game);
 
 	return game;
 }
@@ -120,6 +120,7 @@ move_piece(position origin, position target, board * game, position * amoves)
 			move_piece(coords_to_pos(origin.rank,origin.file-4),coords_to_pos(origin.rank,origin.file-1), game, amoves);
 		}
 
+	target_cell.piece = origin_cell.piece;
 	origin_cell.piece = NULL;	/* erase the piece from the origin */
 	target_cell.side = origin_cell.side;	/* copy piece side */
 	origin_cell.side = NONE;

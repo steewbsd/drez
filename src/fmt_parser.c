@@ -1,20 +1,14 @@
 #include "piece.h"
+#include "board.h"
 #include <regex.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-cell	      **
-fen_parser(char *fen_string, cell board[SIZE_STD][SIZE_STD])
+void
+fen_parser(char *fen_string, board *game)
 {
-	const char     *fen_pattern = "[rRnNbBkKqQpP0-9]{1,8}/ \
-      [rRnNbBkKqQpP0-9]{1,8}/ \
-      [rRnNbBkKqQpP0-9]{1,8}/ \
-      [rRnNbBkKqQpP0-9]{1,8}/ \
-      [rRnNbBkKqQpP0-9]{1,8}/ \
-      [rRnNbBkKqQpP0-9]{1,8}/ \
-      [rRnNbBkKqQpP0-9]{1,8}/ \
-      [rRnNbBkKqQpP0-9]{1,8}/";
+	const char     *fen_pattern = "[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/";
 	regex_t		fen_match;
 	regmatch_t	pmatch[10];
 	int		res_comp = regcomp(&fen_match, fen_pattern, REG_EXTENDED | REG_NOSUB);
@@ -38,7 +32,7 @@ fen_parser(char *fen_string, cell board[SIZE_STD][SIZE_STD])
 		if (fen_string[i] >= 49 && fen_string[i] <= 57) {
 			int		count = fen_string[i] - 48;	/* turn number to int */
 			while (count - j > 0) {
-				board[row][col++] = (cell) {
+				game->game[row][col++] = (cell) {
 					NULL, NONE, 0
 				};
 				j++;
@@ -46,17 +40,16 @@ fen_parser(char *fen_string, cell board[SIZE_STD][SIZE_STD])
 			j = 0;
 			/* lowercase letters (white) */
 		} else if (fen_string[i] >= 0x61 && fen_string[i] <= 0x7a) {
-			board[row][col++] = (cell) {
+			game->game[row][col++] = (cell) {
 				ident_to_piece(fen_string[i]), WHITE, FLAG_FIRSTMOVE
 			};
 			/* uppercase letters (black) */
 		} else if (fen_string[i] >= 0x41 && fen_string[i] <= 0x5a) {
-			board[row][col++] = (cell) {
+			game->game[row][col++] = (cell) {
 				ident_to_piece(fen_string[i]), BLACK, FLAG_FIRSTMOVE
 			};
 		} else {
 			continue;
 		}
 	}
-	return board;
 }
