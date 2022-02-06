@@ -10,3 +10,4 @@ cd drez
 meson build && cd build
 ninja
 ```
+![image](https://user-images.githubusercontent.com/26441684/152686430-1acc42ba-14da-4324-9470-bb1d9bafd1d7.png)
