@@ -6,7 +6,7 @@
 #include <string.h>
 
 void
-fen_parser(char *fen_string, board *game)
+fen_parser(char *fen_string, board * game)
 {
 	const char     *fen_pattern = "[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/[rRnNbBkKqQpP0-9]{1,8}/";
 	regex_t		fen_match;

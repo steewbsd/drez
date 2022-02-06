@@ -35,7 +35,8 @@ init_board(char *fen)
 }
 
 void
-switch_turn(board * game){
+switch_turn(board * game)
+{
 	game->game_flags ^= FLAG_TURN_WHITE;
 	game->game_flags ^= FLAG_TURN_BLACK;
 }
@@ -97,16 +98,17 @@ validate_move(position origin, position target, board * game, position * amoves)
 	return found_move;
 }
 
-int
+position       *
 move_piece(position origin, position target, board * game, position * amoves)
 {
 	cell		origin_cell = game->game[origin.rank][origin.file];
 	cell		target_cell = game->game[target.rank][target.file];
+	position       *moved_by_castle = NULL;
+	position       *moved_pieces = NULL;
 
 	int		valid = validate_move(origin, target, game, amoves);
 	if (valid == ERROR)
-		return ERROR;
-
+		return NULL;
 	/* check if promotion is available for pawn */
 	if (origin_cell.piece->ident == 'p' &&
 	    ((origin_cell.side == BLACK && target.rank == 0)
@@ -115,18 +117,16 @@ move_piece(position origin, position target, board * game, position * amoves)
 		/* TODO:		ask for piece input */
 		target_cell.piece = ident_to_piece(promoted_sel);
 	}
-// check if the king is castling, if yes then move the rook too
+	/* check if the king is castling, if yes then move the rook too */
 	if ((origin_cell.piece->ident == 'k')
-		&&(origin_cell.flags&FLAG_FIRSTMOVE)
-		&&(target.file == origin.file + 2)){
-			move_piece(coords_to_pos(origin.rank,origin.file+3),coords_to_pos(origin.rank,origin.file+1), game, amoves);
-			switch_turn(game);
-		} else if ((origin_cell.piece->ident == 'k')
-		&&(origin_cell.flags&FLAG_FIRSTMOVE)
-		&&(target.file == origin.file - 2)){
-			move_piece(coords_to_pos(origin.rank,origin.file-4),coords_to_pos(origin.rank,origin.file-1), game, amoves);
-			switch_turn(game);
+	    && (origin_cell.flags & FLAG_FIRSTMOVE)) {
+		if (target.file == origin.file + 2) {
+			moved_by_castle = move_piece(coords_to_pos(origin.rank, origin.file + 3), coords_to_pos(origin.rank, origin.file + 1), game, NULL);
+		} else {
+			moved_by_castle = move_piece(coords_to_pos(origin.rank, origin.file - 4), coords_to_pos(origin.rank, origin.file - 1), game, NULL);
 		}
+		switch_turn(game);
+	}
 
 	target_cell.piece = origin_cell.piece;
 	origin_cell.piece = NULL;	/* erase the piece from the origin */
@@ -143,7 +143,21 @@ move_piece(position origin, position target, board * game, position * amoves)
 	game->game[origin.rank][origin.file] = origin_cell;
 
 	switch_turn(game);
-	return 0;
+
+	int		i = 0;
+	int		malloc_size = 4;	/* origin & end, plus more
+						 * space for castles or en
+						 * passants */
+	moved_pieces = malloc(sizeof(position) * malloc_size + sizeof(position));	/* one more for sentinel */
+	moved_pieces[i++] = origin;
+	moved_pieces[i++] = target;
+	if (moved_by_castle != NULL) {
+		moved_pieces[i++] = moved_by_castle[0];
+		moved_pieces[i++] = moved_by_castle[1];
+	}
+	moved_pieces[i] = SENTINEL;
+	free(moved_by_castle);
+	return moved_pieces;
 }
 
 int

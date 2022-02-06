@@ -94,7 +94,7 @@ main()
 				}
 
 				/* move the piece */
-				move_piece(origin, target, game_board, amoves);
+				position       *to_refresh = move_piece(origin, target, game_board, amoves);
 
 				/*
 				 * clean the possible moves as we do not need
@@ -116,18 +116,50 @@ main()
 				 * but it will update any checks it finds if
 				 * that piece were to move
 				 */
+				int		i = 0;
+				while (to_refresh != NULL && to_refresh[i].rank != -1 && to_refresh[i].file != -1) {
+					char	       *sym = game_board->game[to_refresh[i].rank][to_refresh[i].file].piece == NULL ?
+					" " :
+					game_board->game[to_refresh[i].rank][to_refresh[i].file].piece->pretty;
+					wmove(ui_board[to_refresh[i].rank][to_refresh[i].file], cell_size / 2, cell_size / 2);
+					waddstr(ui_board[to_refresh[i].rank][to_refresh[i].file], sym);
+					wrefresh(ui_board[to_refresh[i].rank][to_refresh[i].file]);
+					i++;
+				}
+				free(to_refresh);
+				/*
+				 * /\* fill original cell with an empty piece
+				 * *\/
+				 */
+				/*
+				 * wmove(ui_board[origin.rank][origin.file],
+				 * cell_size / 2, cell_size / 2);
+				 */
+				/*
+				 * waddstr(ui_board[origin.rank][origin.file],
+				 * " ");
+				 */
 
-				/* fill original cell with an empty piece */
-				wmove(ui_board[origin.rank][origin.file], cell_size / 2, cell_size / 2);
-				waddstr(ui_board[origin.rank][origin.file], " ");
+				/*
+				 * /\* fill target cell with the new piece
+				 * symbol *\/
+				 */
+				/*
+				 * wmove(ui_board[target.rank][target.file],
+				 * cell_size / 2, cell_size / 2);
+				 */
+				/*
+				 * waddstr(ui_board[target.rank][target.file],
+				 * game_board->game[target.rank][target.file].piece->pretty);
+				 */
 
-				/* fill target cell with the new piece symbol */
-				wmove(ui_board[target.rank][target.file], cell_size / 2, cell_size / 2);
-				waddstr(ui_board[target.rank][target.file], game_board->game[target.rank][target.file].piece->pretty);
-
-				/* refresh both subwindows */
-				wrefresh(ui_board[origin.rank][origin.file]);
-				wrefresh(ui_board[target.rank][target.file]);
+				/* /\* refresh both subwindows *\/ */
+				/*
+				 * wrefresh(ui_board[origin.rank][origin.file]);
+				 */
+				/*
+				 * wrefresh(ui_board[target.rank][target.file]);
+				 */
 
 			} else {
 				origin = coords_to_pos(sel_row, sel_col);

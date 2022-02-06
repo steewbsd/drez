@@ -4,6 +4,6 @@
 #include "board.h"
 
 
-void fen_parser(char *fen_string, board *game);
+void		fen_parser(char *fen_string, board * game);
 
 #endif
