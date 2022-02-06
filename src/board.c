@@ -115,7 +115,7 @@ move_piece(position origin, position target, board * game, position * amoves)
 	   || (origin_cell.side == WHITE && target.rank == SIZE_STD - 1))) {
 		char		promoted_sel = 'q';
 		/* TODO:		ask for piece input */
-		target_cell.piece = ident_to_piece(promoted_sel);
+		origin_cell.piece = ident_to_piece(promoted_sel);
 	}
 	/* check if the king is castling, if yes then move the rook too */
 	if ((origin_cell.piece->ident == 'k')
