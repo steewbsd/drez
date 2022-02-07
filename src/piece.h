@@ -29,7 +29,7 @@ typedef struct {
 	uint8_t		flags;
 } cell;
 
-position *	moves(piece * piece, position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags);
+position *	moves(piece * piece, position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags, position *last_check_line);
 extern piece rook, bishop, knight, queen, pawn, king;
 position	coords_to_pos(short rank, short file);
 piece	       *ident_to_piece(char ident);

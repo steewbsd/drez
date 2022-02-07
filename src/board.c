@@ -86,7 +86,7 @@ validate_move(position origin, position target, board * game, position * amoves)
 	/* assign passed moves array, else calculate it */
 	position       *valid_moves = amoves;
 	if (valid_moves == NULL) {
-		valid_moves = moves(origin_cell.piece, origin, game->game, &game->game_flags);
+		valid_moves = moves(origin_cell.piece, origin, game->game, &game->game_flags, game->last_check_line);
 		allocated_by_me = 1;
 	}
 
