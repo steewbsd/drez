@@ -109,7 +109,7 @@ main()
 				 * following checks
 				 */
 				free(moves(game_board->game[target.rank][target.file].piece, target,
-				game_board->game, &game_board->game_flags));
+				game_board->game, &game_board->game_flags, game_board->last_check_line));
 				/*
 				 * we do not actually need those moves, so
 				 * that's why we just free them afterwards,
@@ -172,7 +172,7 @@ main()
 				 * chosen piece
 				 */
 				amoves = moves(game_board->game[sel_row][sel_col].piece, coords_to_pos(sel_row, sel_col),
-				 game_board->game, &game_board->game_flags);
+				 game_board->game, &game_board->game_flags, game_board->last_check_line);
 				/* if no moves have been returned, ignore */
 				if (amoves == NULL)
 					break;

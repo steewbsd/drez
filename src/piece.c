@@ -23,14 +23,15 @@ opposite(SIDE orig) {
 }
 
 uint8_t
-check_if_king(position * valid_moves, int move_idx, cell game[SIZE_STD][SIZE_STD],
+check_if_king(position * lcl, int move_idx, cell game[SIZE_STD][SIZE_STD],
 	      uint8_t game_flags){
-	if (move_idx == 0 || valid_moves == NULL)
+	if (move_idx == 0 || lcl == NULL)
 		return game_flags;
+
 	uint8_t		flags = game_flags;
-	if (game[valid_moves[move_idx - 1].rank][valid_moves[move_idx - 1].file].piece != NULL &&
-	    game[valid_moves[move_idx - 1].rank][valid_moves[move_idx - 1].file].piece->ident == 'k') {
-		switch (game[valid_moves[move_idx - 1].rank][valid_moves[move_idx - 1].file].side) {
+	if (game[lcl[move_idx - 1].rank][lcl[move_idx - 1].file].piece != NULL &&
+	    game[lcl[move_idx - 1].rank][lcl[move_idx - 1].file].piece->ident == 'k') {
+		switch (game[lcl[move_idx - 1].rank][lcl[move_idx - 1].file].side) {
 		case BLACK:
 			flags |= FLAG_CHECK_BLACK;
 			break;
@@ -40,12 +41,15 @@ check_if_king(position * valid_moves, int move_idx, cell game[SIZE_STD][SIZE_STD
 		default:
 			break;
 		}
+	} else {
+		lcl = NULL;
+		free(lcl);
 	}
 	return flags;
 }
 
 position       *
-rook_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
+rook_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags, position * lcl)
 {
 	const int	max_length = (SIZE_STD - 1) * 2;	/* a rook can move ( not
 								 * counting other pieces
@@ -61,56 +65,69 @@ rook_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 												 * clarify that's
 												 * reserved for the
 												 * sentinel */
-	int		move_idx = 0;
+	lcl = malloc(sizeof(position)*SIZE_STD); 
+	int		move_idx = 0, lcl_move_idx = 0;;
 
 	/* Line up */
 	for (int row = pos.rank + 1; row < SIZE_STD; row++) {
 		if (game[row][pos.file].piece != NULL) {
 			if (game[row][pos.file].side == opposite(game[pos.rank][pos.file].side)) {
-				valid_moves[move_idx++] = coords_to_pos(row, pos.file);
+				lcl[lcl_move_idx++] = coords_to_pos(row, pos.file);
 				break;
 			}
 			break;
 		}
-		valid_moves[move_idx++] = coords_to_pos(row, pos.file);
+		lcl[lcl_move_idx++] = coords_to_pos(row, pos.file);
 	}
-	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
+	lcl[lcl_move_idx] = SENTINEL;
+	memcpy(valid_moves, lcl, (lcl_move_idx-1) * sizeof(position));
+	*game_flags = check_if_king(lcl, lcl_move_idx, game, *game_flags);
+	move_idx+=lcl_move_idx;
 	/* Line down */
 	for (int row = pos.rank - 1; row >= 0; row--) {
 		if (game[row][pos.file].piece != NULL) {
 			if (game[row][pos.file].side == opposite(game[pos.rank][pos.file].side)) {
-				valid_moves[move_idx++] = coords_to_pos(row, pos.file);
+				lcl[lcl_move_idx++] = coords_to_pos(row, pos.file);
 				break;
 			}
 			break;
 		}
-		valid_moves[move_idx++] = coords_to_pos(row, pos.file);
+		lcl[lcl_move_idx++] = coords_to_pos(row, pos.file);
 	}
-	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
+	lcl[lcl_move_idx] = SENTINEL;
+	memcpy(valid_moves, lcl, (lcl_move_idx-1) * sizeof(position));
+	*game_flags = check_if_king(lcl, lcl_move_idx, game, *game_flags);
+	move_idx+=lcl_move_idx-1;
 	/* Line left */
 	for (int col = pos.file - 1; col >= 0; col--) {
 		if (game[pos.rank][col].piece != NULL) {
 			if (game[pos.rank][col].side == opposite(game[pos.rank][pos.file].side)) {
-				valid_moves[move_idx++] = coords_to_pos(pos.rank, col);
+				lcl[lcl_move_idx++] = coords_to_pos(pos.rank, col);
 				break;
 			}
 			break;
 		}
-		valid_moves[move_idx++] = coords_to_pos(pos.rank, col);
+		lcl[lcl_move_idx++] = coords_to_pos(pos.rank, col);
 	}
-	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
+	lcl[lcl_move_idx] = SENTINEL;
+	memcpy(valid_moves + move_idx, lcl, (lcl_move_idx-1) * sizeof(position));
+	*game_flags = check_if_king(lcl, lcl_move_idx, game, *game_flags);
+	move_idx+=lcl_move_idx;
 	/* Line right */
 	for (int col = pos.file + 1; col < SIZE_STD; col++) {
 		if (game[pos.rank][col].piece != NULL) {
 			if (game[pos.rank][col].side == opposite(game[pos.rank][pos.file].side)) {
-				valid_moves[move_idx++] = coords_to_pos(pos.rank, col);
+				lcl[lcl_move_idx++] = coords_to_pos(pos.rank, col);
 				break;
 			}
 			break;
 		}
-		valid_moves[move_idx++] = coords_to_pos(pos.rank, col);
+		lcl[lcl_move_idx++] = coords_to_pos(pos.rank, col);
 	}
-	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
+	lcl[lcl_move_idx] = SENTINEL;
+	memcpy(valid_moves + move_idx, lcl, (lcl_move_idx-1) * sizeof(position));
+	*game_flags = check_if_king(lcl, lcl_move_idx, game, *game_flags);
+	move_idx+=lcl_move_idx;
 	valid_moves[move_idx] = SENTINEL;
 	return valid_moves;
 }
@@ -141,7 +158,7 @@ knight_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 }
 
 position       *
-bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
+bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags, position * lcl)
 {
 	/*
 	 * we can approximate, in the worst case the bishop will take
@@ -151,72 +168,87 @@ bishop_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 	position       *valid_moves = malloc(sizeof(position) * max_length + sizeof(position));	/* allocate vertical +
 												 * horizontal moves +
 												 * sentinel */
-	int		i = 1, move_idx = 0;
+	lcl = malloc(sizeof(position)*SIZE_STD); /* allocate one diagonal worst case scenario takes 7 cells */
+	int		i = 1, move_idx = 0, lcl_move_idx = 0;
 
 	/* first diagonal: top right */
 	while (pos.rank + i < SIZE_STD && pos.file + i < SIZE_STD) {
 		if (game[pos.rank + i][pos.file + i].piece != NULL) {
 			if (game[pos.rank + i][pos.file + i].side == opposite(game[pos.rank][pos.file].side)) {
-				valid_moves[move_idx++] = coords_to_pos(pos.rank + i, pos.file + i);
+				lcl[lcl_move_idx++] = coords_to_pos(pos.rank + i, pos.file + i);
 				break;
 			}
 			break;
 		}
-		valid_moves[move_idx++] = coords_to_pos(pos.rank + i, pos.file + i);
+		lcl[lcl_move_idx++] = coords_to_pos(pos.rank + i, pos.file + i);
 		i++;
 	}
-	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
+	lcl[lcl_move_idx] = SENTINEL;
+	memcpy(valid_moves, lcl, (lcl_move_idx-1) * sizeof(position));
+	*game_flags = check_if_king(lcl, lcl_move_idx, game, *game_flags);
+	move_idx+=lcl_move_idx-1;
+
 	/* second diagonal: top left */
-	i = 1;
+	i = 1, lcl_move_idx=0;
 	while (pos.rank + i < SIZE_STD && pos.file - i >= 0) {
 		if (game[pos.rank + i][pos.file - i].piece != NULL) {
 			if (game[pos.rank + i][pos.file - i].side == opposite(game[pos.rank][pos.file].side)) {
-				valid_moves[move_idx++] = coords_to_pos(pos.rank + i, pos.file - i);
+				lcl[lcl_move_idx++] = coords_to_pos(pos.rank + i, pos.file - i);
 				break;
 			}
 			break;
 		}
-		valid_moves[move_idx++] = coords_to_pos(pos.rank + i, pos.file - i);
+		lcl[lcl_move_idx++] = coords_to_pos(pos.rank + i, pos.file - i);
 		i++;
 	}
-	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
+	lcl[lcl_move_idx] = SENTINEL;
+	memcpy(valid_moves + move_idx, lcl, (lcl_move_idx-1) * sizeof(position));
+	*game_flags = check_if_king(lcl, lcl_move_idx, game, *game_flags);
+	move_idx+=lcl_move_idx;
+
 	/* third diagonal: bottom left */
-	i = 1;
+	i = 1, lcl_move_idx=0;
 	while (pos.rank - i >= 0 && pos.file - i >= 0) {
 		if (game[pos.rank - i][pos.file - i].piece != NULL) {
 			if (game[pos.rank - i][pos.file - i].side == opposite(game[pos.rank][pos.file].side)) {
-				valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file - i);
+				lcl[lcl_move_idx++] = coords_to_pos(pos.rank - i, pos.file - i);
 				break;
 			}
 			break;
 		}
-		valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file - i);
+		lcl[lcl_move_idx++] = coords_to_pos(pos.rank - i, pos.file - i);
 		i++;
 	}
-	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
+	lcl[lcl_move_idx] = SENTINEL;
+	memcpy(valid_moves + move_idx, lcl, (lcl_move_idx-1) * sizeof(position));
+	*game_flags = check_if_king(lcl, lcl_move_idx, game, *game_flags);
+	move_idx+=lcl_move_idx;
 	/* fourth diagonal: bottom right */
 	i = 1;
 	while (pos.rank - i >= 0 && pos.file + i < SIZE_STD) {
 		if (game[pos.rank - i][pos.file + i].piece != NULL) {
 			if (game[pos.rank - i][pos.file + i].side == opposite(game[pos.rank][pos.file].side)) {
-				valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file + i);
+				lcl[lcl_move_idx++] = coords_to_pos(pos.rank - i, pos.file + i);
 				break;
 			}
 			break;
 		}
-		valid_moves[move_idx++] = coords_to_pos(pos.rank - i, pos.file + i);
+		lcl[lcl_move_idx++] = coords_to_pos(pos.rank - i, pos.file + i);
 		i++;
 	}
-	*game_flags = check_if_king(valid_moves, move_idx, game, *game_flags);
+	lcl[lcl_move_idx] = SENTINEL;
+	memcpy(valid_moves + move_idx, lcl, (lcl_move_idx-1) * sizeof(position));
+	*game_flags = check_if_king(lcl, lcl_move_idx, game, *game_flags);
+	move_idx+=lcl_move_idx;
 	valid_moves[move_idx] = SENTINEL;
 	return valid_moves;
 }
 
 position       *
-queen_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
+queen_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags, position * last_check_line)
 {
-	position       *bishop_moves = bishop_valid(pos, game, game_flags);
-	position       *rook_moves = rook_valid(pos, game, game_flags);
+	position       *bishop_moves = bishop_valid(pos, game, game_flags, last_check_line);
+	position       *rook_moves = rook_valid(pos, game, game_flags, last_check_line);
 	int		bishop_moves_len, rook_moves_len;
 	for (bishop_moves_len = 0; bishop_moves[bishop_moves_len].file != -1; bishop_moves_len++)
 		;
@@ -306,20 +338,20 @@ pawn_valid(position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
 }
 
 position *
-moves(piece * piece, position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags)
+moves(piece * piece, position pos, cell game[SIZE_STD][SIZE_STD], uint8_t * game_flags, position *last_check_line)
 {
 	switch (piece->ident) {
 	case 'r':
-		return rook_valid(pos, game, game_flags);
+		return rook_valid(pos, game, game_flags, last_check_line);
 		break;
 	case 'b':
-		return bishop_valid(pos, game, game_flags);
+		return bishop_valid(pos, game, game_flags, last_check_line);
 		break;
 	case 'n':
 		return knight_valid(pos, game, game_flags);
 		break;
 	case 'q':
-		return queen_valid(pos, game, game_flags);
+		return queen_valid(pos, game, game_flags, last_check_line);
 		break;
 	case 'k':
 		return king_valid(pos, game, game_flags);
